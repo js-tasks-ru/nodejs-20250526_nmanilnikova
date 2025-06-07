@@ -7,6 +7,6 @@ export class NotificationsService {
     console.log(`Email sent to ${to}: [${subject}] ${message}`);
   }
   sendSMS(to: string, message: string): void {
-    console.log(`SMS sent to ${to}: Статус задачи "${message}" обновлён на "completed"`);
+    console.log(`SMS sent to ${to}: ${message}`);
   }
 }

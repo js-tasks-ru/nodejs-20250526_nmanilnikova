@@ -45,7 +45,7 @@ export class TasksService {
       throw new NotFoundException('404 Not Found');
     }
 
-    this.notificationsService.sendSMS(user.phone, `Статус задачи "${task.title}" обновлён на "completed"`)
+    this.notificationsService.sendSMS(user.phone, `Статус задачи "${task.title}" обновлён на "${task.status}"`)
 
     return task;
   }
