@@ -4,18 +4,23 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
+  UseInterceptors
 } from "@nestjs/common";
 import { TasksService } from "./tasks.service";
 import { CreateTaskDto, UpdateTaskDto } from "./task.model";
+import { ParseIntPipe } from "../pipes/parse-int.pipe";
+import { RolesGuard } from "../guards/roles.guard";
+import { ApiVersionInterceptor } from "../interceptors/api-version.interceptor";
 
 @Controller("tasks")
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
+  @UseInterceptors(ApiVersionInterceptor)
   getAllTasks() {
     return this.tasksService.getAllTasks();
   }
@@ -26,6 +31,7 @@ export class TasksController {
   }
 
   @Post()
+  @UseGuards(RolesGuard)
   createTask(@Body() task: CreateTaskDto) {
     return this.tasksService.createTask(task);
   }
@@ -39,6 +45,7 @@ export class TasksController {
   }
 
   @Delete(":id")
+  @UseGuards(RolesGuard)
   deleteTask(@Param("id", ParseIntPipe) id: number) {
     return this.tasksService.deleteTask(id);
   }
