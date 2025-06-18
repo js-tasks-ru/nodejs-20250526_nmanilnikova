@@ -8,10 +8,4 @@ import { LoggingMiddleware } from "../middlewares/logging.middleware";
   controllers: [TasksController],
   providers: [TasksService],
 })
-export class TasksModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggingMiddleware)
-      .forRoutes(TasksController);
-  }
-}
+export class TasksModule {}
