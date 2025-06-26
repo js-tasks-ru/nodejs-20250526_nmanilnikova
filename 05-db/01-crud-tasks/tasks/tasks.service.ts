@@ -12,20 +12,7 @@ export class TasksService {
       private readonly taskRepository: Repository<Task>,
   ) {}
 
-  create(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.taskRepository.save(createTaskDto);
-  }
-
-  async findAll(page: number, limit: number): Promise<Task[]> {
-    const [items]: [items: Task[], total: number] = await this.taskRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-
-    return items;
-  }
-
-  async findOne(id: number): Promise<Task> {
+  async checkIsExists(id: number) {
     const exists = await this.taskRepository.exists({
       where: {id}
     })
@@ -33,6 +20,28 @@ export class TasksService {
     if (!exists) {
       throw new NotFoundException('Not Found');
     }
+  }
+
+  create(createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.taskRepository.save(createTaskDto);
+  }
+
+  async findAll(page?: number, limit?: number): Promise<Task[]> {
+    if (page && limit) {
+      const [items]: [items: Task[], total: number] = await this.taskRepository.findAndCount({
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+
+      return items;
+    }
+
+    return this.taskRepository.find()
+
+  }
+
+  async findOne(id: number): Promise<Task> {
+    await this.checkIsExists(id)
 
     return this.taskRepository.findOne({
       where: {id}
@@ -40,13 +49,7 @@ export class TasksService {
   }
 
   async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
-    const exists = await this.taskRepository.exists({
-      where: {id}
-    })
-
-    if (!exists) {
-      throw new NotFoundException('Not Found');
-    }
+    await this.checkIsExists(id)
 
     await this.taskRepository.update(id, updateTaskDto);
 
@@ -54,13 +57,7 @@ export class TasksService {
   }
 
   async remove(id: number): Promise<void> {
-    const exists = await this.taskRepository.exists({
-      where: {id}
-    })
-
-    if (!exists) {
-      throw new NotFoundException('Not Found');
-    }
+    await this.checkIsExists(id)
 
     await this.taskRepository.delete(id);
   }
